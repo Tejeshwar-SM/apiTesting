@@ -20,9 +20,9 @@ export async function getOrderCount(
     if(cachedItem) {
         const parsed = JSON.parse(cachedItem);
         const now = Date.now();
-        const fiveMins = 5*60*1000;
-        if(now - parsed.timestamp < fiveMins) {
-            return parsed.count;
+        const threshold = 15*60*1000;//15mins
+        if(now - parsed.timestamp < threshold) {
+            return [parsed.count, parsed.orderIDs ?? [], parsed.orderData ?? {}];
         }
     }
 
@@ -34,13 +34,17 @@ export async function getOrderCount(
     end_time:   "",
     product_id: [productID],
     criteria:   "all",
-    search_type:"all"
+    search_type:"all",
+    return_type: "order_view"
     };
     
     const {data} = await api.post("order_find", req_body);
     if(data.response_code !== "100") throw new Error("API Error");
     const count = Number(data.total_orders ?? 0);
+    const orderID = data.order_id;
+    const orderData = data.data;
 
-    localStorage.setItem(cachedKey, JSON.stringify({count, timestamp:Date.now()}));
-    return count;
+    localStorage.setItem(cachedKey, JSON.stringify({count, timestamp:Date.now(), orderID, orderData}));
+    //doubt
+    return [count, orderID, orderData];
 }
