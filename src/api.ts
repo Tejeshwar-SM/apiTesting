@@ -30,14 +30,16 @@ const api = axios.create({
     password: import.meta.env.VITE_STICKY_PASSWD,
   },
   headers: { "Content-Type": "application/json" },
+  timeout: 60000,
 });
 
 export async function getOrderCount(
   productID: number,
   startDate: string = "01/01/2000",
-  endDate: string = "01/01/2100"
+  endDate: string = "01/01/2100",
+  returnFullData: boolean = false
 ): Promise<[number, string[], Record<string, OrderRow>]> {
-  const cachedKey = `order_count_${productID}_${startDate}_${endDate}`;
+  const cachedKey = `order_count_${productID}_${startDate}_${endDate}_${returnFullData}`;
   const cachedItem = localStorage.getItem(cachedKey);
 
   if (cachedItem) {
@@ -59,7 +61,7 @@ export async function getOrderCount(
     product_id: [productID],
     criteria: "all",
     search_type: "all",
-    return_type: "order_view",
+    ...(returnFullData && { return_type: "order_view" }),
   };
 
   const { data }: { data: APIResponse } = await api.post(
@@ -74,26 +76,28 @@ export async function getOrderCount(
   const orderData = data.data ?? {};
 
   const trimmedOrderData: Record<string, OrderRow> = {};
-  Object.entries(orderData).forEach(([id, order]) => {
-    if (typeof order === "object" && order !== null) {
-      const o = order as Record<string, unknown>; // Assuming `order` is an object
-      trimmedOrderData[id] = {
-        order_id: id,
-        acquisition_date: (o.acquisition_date as string) || "",
-        billing_first_name: (o.billing_first_name as string) || "",
-        billing_last_name: (o.billing_last_name as string) || "",
-        email_address: (o.email_address as string) || "",
-        order_total: (o.order_total as string) || "0",
-      };
-    }
-  });
 
+  if (returnFullData) {
+    Object.entries(orderData).forEach(([id, order]) => {
+      if (typeof order === "object" && order !== null) {
+        const o = order as Record<string, unknown>;
+        trimmedOrderData[id] = {
+          order_id: id,
+          acquisition_date: (o.acquisition_date as string) || "",
+          billing_first_name: (o.billing_first_name as string) || "",
+          billing_last_name: (o.billing_last_name as string) || "",
+          email_address: (o.email_address as string) || "",
+          order_total: (o.order_total as string) || "0",
+        };
+      }
+    });
+  }
   localStorage.setItem(
     cachedKey,
     JSON.stringify({
       count,
       timestamp: Date.now(),
-      orderID,
+      orderID: returnFullData ? orderID : [],
       orderData: trimmedOrderData,
     })
   );

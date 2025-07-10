@@ -46,15 +46,16 @@ function App() {
       setLoading(true);
       const formattedStart = formatDate("2000-01-01");
       const formattedEnd = formatDate("2100-01-01");
-      const [cnt, orderIDs, orderData] = await getOrderCount(
+      const [cnt, ,] = await getOrderCount(
         productId,
         formattedStart,
-        formattedEnd
+        formattedEnd,
+        false
       );
       setCount(cnt);
 
-      // ✅ Simplified - no mapping needed
-      setOrders(Object.values(orderData || {}));
+      
+      // setOrders(Object.values(orderData || {}));
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -69,16 +70,17 @@ function App() {
   const fetchOrderCount2 = async (
     productId: number,
     start: string,
-    end: string
+    end: string,
   ) => {
     try {
       setLoading(true);
       const formattedStart = formatDate(start);
       const formattedEnd = formatDate(end);
-      const [cnt, orderIDs, orderData] = await getOrderCount(
+      const [cnt, , orderData] = await getOrderCount(
         productId,
         formattedStart,
-        formattedEnd
+        formattedEnd,
+        true,
       );
       setCount(cnt);
 
