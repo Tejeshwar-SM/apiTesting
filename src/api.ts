@@ -22,7 +22,7 @@ interface APIResponse {
   response_code: string;
   total_orders?: string;
   order_id?: string[];
-  data?: Record<string, any>;  // Ideally replace `any` with a better type
+  data?: Record<string, any>;
 }
 
 // Axios instance for API requests
@@ -35,30 +35,26 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Function to fetch order count
 export async function getOrderCount(
   productID: number,
   startDate: string = "01/01/2000",
   endDate: string = "01/01/2100"
 ): Promise<[number, string[], Record<string, OrderRow>]> {
 
-  // Create a key for caching
   const cachedKey = `order_count_${productID}_${startDate}_${endDate}`;
   const cachedItem = localStorage.getItem(cachedKey);
 
-  // Check if we have a cached item
+  
   if (cachedItem) {
     const parsed: CacheEntry = JSON.parse(cachedItem);
     const now = Date.now();
     const threshold = 15 * 60 * 1000;  // 15 minutes
 
-    // Return from cache if the data is fresh enough
     if (now - parsed.timestamp < threshold) {
       return [parsed.count, parsed.orderID ?? [], parsed.orderData ?? {}];
     }
   }
 
-  // Make the API request
   const req_body = {
     campaign_id: "all",
     start_date: startDate,
@@ -80,7 +76,6 @@ export async function getOrderCount(
   const orderID = data.order_id ?? [];
   const orderData = data.data ?? {};
 
-  // Trim order data to selected fields
   const trimmedOrderData: Record<string, OrderRow> = {};
   Object.entries(orderData).forEach(([id, order]) => {
     if (typeof order === "object" && order !== null) {
@@ -97,13 +92,11 @@ export async function getOrderCount(
     }
   });
 
-  // Store the result in localStorage for caching
   localStorage.setItem(
     cachedKey,
     JSON.stringify({ count, timestamp: Date.now(), orderID, orderData: trimmedOrderData })
   );
 
-  // Clear older caches
   clearCache();
 
   return [count, orderID, trimmedOrderData];
