@@ -2,7 +2,6 @@ import { useState } from "react";
 import { getOrderCount } from "./api";
 import "./index.css";
 
-
 interface Order {
   order_id: string;
   acquisition_date: string;
@@ -11,7 +10,6 @@ interface Order {
   email_address: string;
   order_total: string;
   order_status: string;
-  [key: string]: unknown;
 }
 
 const PRODUCTS = [2142, 2181, 2201] as const;
@@ -56,15 +54,8 @@ function App() {
       );
       setCount(cnt);
 
-      const orderList = Object.entries(orderData || {}).map(([id, order]) => {
-        return {
-          ...(order as Order),
-          order_id: id,
-          
-        };
-      });
-
-      setOrders(orderList);
+      // ✅ Simplified - no mapping needed
+      setOrders(Object.values(orderData || {}));
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -92,15 +83,8 @@ function App() {
       );
       setCount(cnt);
 
-      const orderList = Object.entries(orderData || {}).map(([id, order]) => {
-        return {
-          ...(order as Order),
-          order_id: id,
-          
-        };
-      });
-
-      setOrders(orderList);
+      
+      setOrders(Object.values(orderData || {}));
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -178,7 +162,7 @@ function App() {
           <tbody>
             {orders.map((order, index) => (
               <tr key={order.order_id}>
-                 <td>{index + 1}</td>
+                <td>{index + 1}</td>
                 <td>{order.order_id}</td>
                 <td>{order.acquisition_date}</td>
                 <td>{order.billing_first_name}</td>
