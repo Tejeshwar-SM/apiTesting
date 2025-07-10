@@ -9,7 +9,6 @@ interface Order {
   billing_last_name: string;
   email_address: string;
   order_total: string;
-  order_status: string;
 }
 
 const PRODUCTS = [2142, 2181, 2201] as const;

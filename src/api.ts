@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// Interfaces for type safety
 interface OrderRow {
   order_id: string;
   acquisition_date: string;
@@ -8,7 +7,6 @@ interface OrderRow {
   billing_last_name: string;
   email_address: string;
   order_total: string;
-  order_status: string;
 }
 
 interface CacheEntry {
@@ -25,7 +23,6 @@ interface APIResponse {
   data?: Record<string, any>;
 }
 
-// Axios instance for API requests
 const api = axios.create({
   baseURL: import.meta.env.VITE_STICKY_BASE,
   auth: {
@@ -40,15 +37,13 @@ export async function getOrderCount(
   startDate: string = "01/01/2000",
   endDate: string = "01/01/2100"
 ): Promise<[number, string[], Record<string, OrderRow>]> {
-
   const cachedKey = `order_count_${productID}_${startDate}_${endDate}`;
   const cachedItem = localStorage.getItem(cachedKey);
 
-  
   if (cachedItem) {
     const parsed: CacheEntry = JSON.parse(cachedItem);
     const now = Date.now();
-    const threshold = 15 * 60 * 1000;  // 15 minutes
+    const threshold = 15 * 60 * 1000; // 15 minutes
 
     if (now - parsed.timestamp < threshold) {
       return [parsed.count, parsed.orderID ?? [], parsed.orderData ?? {}];
@@ -67,9 +62,11 @@ export async function getOrderCount(
     return_type: "order_view",
   };
 
-  const { data }: { data: APIResponse } = await api.post("order_find", req_body);
+  const { data }: { data: APIResponse } = await api.post(
+    "order_find",
+    req_body
+  );
 
-  // Error handling
   if (data.response_code !== "100") throw new Error("API Error");
 
   const count = Number(data.total_orders ?? 0);
@@ -79,22 +76,26 @@ export async function getOrderCount(
   const trimmedOrderData: Record<string, OrderRow> = {};
   Object.entries(orderData).forEach(([id, order]) => {
     if (typeof order === "object" && order !== null) {
-      const o = order as Record<string, unknown>;  // Assuming `order` is an object
+      const o = order as Record<string, unknown>; // Assuming `order` is an object
       trimmedOrderData[id] = {
         order_id: id,
-        acquisition_date: o.acquisition_date as string || "",
-        billing_first_name: o.billing_first_name as string || "",
-        billing_last_name: o.billing_last_name as string || "",
-        email_address: o.email_address as string || "",
-        order_total: o.order_total as string || "0",
-        order_status: o.order_status as string || "unknown",
+        acquisition_date: (o.acquisition_date as string) || "",
+        billing_first_name: (o.billing_first_name as string) || "",
+        billing_last_name: (o.billing_last_name as string) || "",
+        email_address: (o.email_address as string) || "",
+        order_total: (o.order_total as string) || "0",
       };
     }
   });
 
   localStorage.setItem(
     cachedKey,
-    JSON.stringify({ count, timestamp: Date.now(), orderID, orderData: trimmedOrderData })
+    JSON.stringify({
+      count,
+      timestamp: Date.now(),
+      orderID,
+      orderData: trimmedOrderData,
+    })
   );
 
   clearCache();
@@ -102,10 +103,11 @@ export async function getOrderCount(
   return [count, orderID, trimmedOrderData];
 }
 
-
 function clearCache(): void {
   try {
-    const cachedKeys = Object.keys(localStorage).filter((key) => key.startsWith("order_count"));
+    const cachedKeys = Object.keys(localStorage).filter((key) =>
+      key.startsWith("order_count")
+    );
 
     if (cachedKeys.length <= 5) {
       return;

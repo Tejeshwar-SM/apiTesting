@@ -6,98 +6,121 @@
 
 body {
   font-family: system-ui, sans-serif;
-  background-color: #f4f6f8;
+  background: #f4f6f8;
   color: #333;
-  line-height: 1.6;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   padding: 2rem;
+  line-height: 1.6;
 }
+
 
 .main {
   background: #fff;
-  padding: 2rem 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  max-width: 900px;
   width: 100%;
-  max-width: 929px;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .main h2 {
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   color: #2c3e50;
+  margin-bottom: 1.5rem;
 }
+
 
 .label {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   font-weight: 500;
 }
-
-.label select {
+.label select,
+.date-range input,
+.date-range button {
   margin-top: 0.5rem;
-  padding: 0.4rem 0.6rem;
+  padding: 0.5rem 0.75rem;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
+.date-range {
+  display: flex;
+  align-items: flex-end;
+  /* align-items: center; */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.date-range .label {
+  margin-bottom: 0;
+}
+
+.date-range button {
+  background: #2a3bee;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.date-range button:hover:not(:disabled) {
+  background: #1f2bb8;
+}
+
+.date-range button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.date-range button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* status messages */
 p {
   margin-top: 1rem;
   font-size: 1rem;
 }
+/* p[style] {
+  
+} */
 
-button {
-  padding: 1rem;
-  background: #2a3bee;
-  color: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  /* TODO: add common styles for elements in obsidian */
-  transition: all 0.2s ease;
-}
-
-.button:active {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transform: translateY(1px);
-}
-
-.button:disabled {
-  background-color: #ccc;       
-  color: #666;                  
-  box-shadow: none;              
-  cursor: not-allowed;           
-  transform: none;               
-  opacity: 0.6;
-}
 
 .order-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 2rem;
   font-size: 0.95rem;
+  text-align: left;
 }
 
 .order-table th,
 .order-table td {
-  border: 1px solid #ccc;
-  padding: 0.6rem 0.75rem;
-  text-align: left;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e0e0;
 }
 
 .order-table thead {
-  background-color: #f0f0f0;
+  background: #fafafa;
 }
 
 .order-table th {
-  font-weight: 600;
   color: #2c3e50;
+  font-weight: 600;
 }
 
 .order-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background: #f9f9f9;
+}
+
+.order-table tbody tr:hover {
+  background: #eef2f7;
 }
