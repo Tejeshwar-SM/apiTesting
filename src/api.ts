@@ -44,6 +44,6 @@ export async function getOrderCount(
     const orderID = data.order_id;
     const orderData = data.data;
 
-    localStorage.setItem(cachedKey, JSON.stringify({count, timestamp:Date.now()}));
+    localStorage.setItem(cachedKey, JSON.stringify({count, timestamp:Date.now(), orderID, orderData}));
     return [count, orderID, orderData];
 }
